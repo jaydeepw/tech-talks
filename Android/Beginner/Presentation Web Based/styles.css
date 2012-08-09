@@ -619,3 +619,8 @@ article.smaller q::after {
   width: 100px;
   height: 100px;
 }
+
+.image-banner{
+  width: 600px;
+  height: 450px;
+}
