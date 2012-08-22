@@ -29,7 +29,7 @@ public class MainActivity extends Activity {
     }
 
 	private void intiUIIntentReceiver() {
-		mUIIntentReceiver = new BroadcastReceiver() { 
+		mUIIntentReceiver = new BroadcastReceiver() {
 			 
 			@Override
 			public void onReceive(Context context, Intent intent) {
