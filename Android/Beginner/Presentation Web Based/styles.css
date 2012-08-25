@@ -624,3 +624,7 @@ article.smaller q::after {
   width: 600px;
   height: 450px;
 }
+
+a.no-underline{
+  text-decoration: none;
+}
