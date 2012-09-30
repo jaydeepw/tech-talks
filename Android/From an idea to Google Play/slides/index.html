@@ -10,7 +10,6 @@
 
     <section class='slides layout-regular template-default'>
 
-      <!-- slide1 -->
       <article>
         <h1>From an idea to Google Play</h1>
         <p>
@@ -18,7 +17,6 @@
         </p>
       </article>
 
-      <!-- slide2 -->
        <article>
         <article style="width:100%;">
           <div style="width: 450px; margin: 0 auto 0 auto;">
@@ -43,10 +41,9 @@
         </article>
       </article>
 
-      <!-- slide3 -->
       <article>
         <h1>
-          Main Topics
+          Agenda
         </h1>
         <ul>
           <li> Before you start developing. </li>
@@ -57,7 +54,6 @@
         </ul>
       </article>
 
-      <!-- slide4 -->
       <article>
         <h1>
           Pre development
@@ -70,7 +66,6 @@
         </ul>
       </article>
 
-      <!-- slide5 -->
       <article>
         <h1>
           Market research
@@ -119,7 +114,7 @@
         </ul>
       </article>
 
-      <!-- slide5 -->
+
       <article>
         <h1>
           During development
@@ -127,12 +122,90 @@
         <ul>
           <li> Taking care of ANRs and NPE. </li>
           <li> Exception prone areas more failsafe </li>
-          <li> Recovery </li>
+          <li> Remote error logging </li>
           <li> Offline capabilities </li>
         </ul>
       </article>
 
-      <!-- slide6 -->
+      <article>
+        <h3>
+          ANRs and NPE
+        </h3>
+        <img src="images/anrs-npe.png" style="width: 700px; height: 500px;"/>
+      </article>
+
+      <article>
+        <h1>
+          Avoiding ANRs and NPE
+        </h1>
+        <ul>
+          <li> Respond to user within <strong>5 seconds</strong> </li>
+          <li> BroadCast Receiver must complete within <strong>10 seconds</strong> </li>
+          <li> Users perceive lag longer than 100-200ms </li>
+          <li> Use <strong>Threads</strong> and <strong>AsynTask</strong> within <strong>Service</strong> </li>
+        </ul>
+      </article>
+
+      <article>
+        <h3>
+          Failsafe exceptions
+        </h3>
+        <section>
+          <pre>
+            // Bad practice
+            try{
+              // do something risky
+            } catch (NarrowException1 e){
+
+            } catch (NarrowException2 e){
+
+            }
+          </pre>
+        </section>
+        <section>
+          <pre>
+            // Good practice
+            try{
+              // do something risky
+            } catch (NarrowException1 e){
+
+            } catch (NarrowException2 e){
+
+            } catch (Exception e){
+
+            }
+          </pre>
+        </section>
+      </article>
+
+      <article>
+        <h3>
+          Remote error logging
+        </h3>
+        <section>
+          <pre>
+            try{
+              // do something risky
+            } catch (NarrowException1 e){
+
+            } catch (NarrowException2 e){
+
+            } catch (Exception e){
+              // call error API
+              // for remote loggin 
+              // on server
+              error( e.getMessage() );
+            }
+          </pre>
+        </section>
+      </article>
+
+      <article>
+        <h1>
+          Offline capabilities
+        </h1>
+      </article>
+
       <article>
         <h1>
           Minimum viable product
@@ -144,7 +217,6 @@
         </ul>
       </article>
 
-      <!-- slide7 -->
       <article>
         <h1>
           Post development
@@ -162,7 +234,6 @@
         </ul>
       </article>
 
-      <!-- slide8 -->
       <article>
         <h1>
           Post deployment
@@ -185,4 +256,3 @@
     </section>
   </body>
 </html>
-    
