@@ -192,7 +192,7 @@
 
             } catch (Exception e){
               // call error API
-              // for remote loggin 
+              // for remote logging
               // on server
               error( e.getMessage() );
             }
@@ -204,6 +204,7 @@
         <h1>
           Offline capabilities
         </h1>
+        <img src="images/offline-capability.png" style="width: 320px; height: 480px; float: right; position: absolute; right: 40px; top: 110px;"/>
       </article>
 
       <article>
@@ -215,6 +216,59 @@
           <li> Admob integration </li>
           <li> ACRA integration </li>
         </ul>
+      </article>
+
+      <article>
+        <h3>
+          Google Analytics integration
+        </h3>
+        <section>
+          <pre>
+            // Start tracking
+            tracker.start("UA-MY_CODE-XX", this);
+
+            // Register an activity view.
+            tracker.trackPageView("/map_activity");
+
+            // send views to server
+            tracker.dispatch();
+          </pre>
+        </section>
+      </article>
+
+       <article>
+        <h3>
+          Google Admob integration
+        </h3>
+        <section>
+          <pre>
+            // Create adview
+            AdView adView = new AdView(this, AD_TYPE, 
+            MY_BANNER_UNIT_ID);
+
+            // Create an ad request
+            AdRequest request = new AdRequest();
+
+            // Load ad in the UI.
+            adView.loadAd(request);
+          </pre>
+        </section>
+      </article>
+
+      <article>
+        <h3>
+          ACRA integration
+        </h3>
+        <section>
+          <pre>
+            // Associate the form
+            @ReportsCrashes(formKey = 
+            "dDI4V1YtWTBQaGc2ZVZRbDgzWHVqQWc6MQ")
+
+            // Initialize ACRA
+            ACRA.init( this );
+          </pre>
+        </section>
       </article>
 
       <article>
