@@ -1,6 +1,7 @@
 package com.codelab.restapi;
 
 import java.net.URLEncoder;
+import java.util.HashMap;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -8,6 +9,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.codelab.moviefindercheatsheet.Constants;
 
@@ -40,7 +44,10 @@ public class ServerConnectionManager {
 		return true;
 	}
 	
-	public boolean searchMovie(String movieName){
+	public boolean searchMovie(String movieName, HashMap<String, String> outPut){
+		
+		String response = null;
+		
 		try {
 		    HttpClient client = new DefaultHttpClient();
 		    String getURL = "http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=" + Constants.MOVIE_FINDER_API_KEY + "&q=" + URLEncoder.encode(movieName) + "&page_limit=1";
@@ -49,13 +56,43 @@ public class ServerConnectionManager {
 		    HttpEntity resEntityGet = responseGet.getEntity();  
 		    if (resEntityGet != null) {  
 		        // do something with the response
-		        String response = EntityUtils.toString(resEntityGet);
+		         response = EntityUtils.toString(resEntityGet);
 		        Log.v(TAG, response);
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();
 		    Log.e(TAG, "#searchMovie Exception msg: " + e.getMessage() );
 		    return false;
+		}
+		
+		// parse the response
+		JSONObject respJSONObj = null;
+		JSONArray movieArr = null;
+		try {
+			 respJSONObj = new JSONObject(response);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			movieArr = respJSONObj.has("movies") ? respJSONObj.getJSONArray("movies") : null;
+			
+			// consider only the first movie result that has been returned.
+			// Skip others.
+			if(movieArr != null && movieArr.length() > 0){
+				JSONObject movieInfo = (JSONObject) movieArr.get(0);
+				String title = movieInfo.has("title") ? movieInfo.getString("title") : null;
+				String year = movieInfo.has("year") ? movieInfo.getString("year") : null;
+				String runtime = movieInfo.has("runtime") ? movieInfo.getString("runtime") : null;
+				String synopsis = movieInfo.has("synopsis") ? movieInfo.getString("synopsis") : null;
+
+				if( title != null ) outPut.put("title", title);
+				if( year != null ) outPut.put("year", year);
+				if( runtime != null ) outPut.put("runtime", runtime);
+				if( synopsis != null ) outPut.put("synopsis", synopsis);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
 		
 		return true;
