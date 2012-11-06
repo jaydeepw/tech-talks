@@ -70,8 +70,15 @@ public class ServerConnectionManager {
 		JSONArray movieArr = null;
 		try {
 			 respJSONObj = new JSONObject(response);
+			 String error = respJSONObj.has("error") ? respJSONObj.getString("error") : null;
+			 
+			if( error != null ) {outPut.put("error", error); return false;};
 		} catch (JSONException e) {
 			e.printStackTrace();
+			Log.e(TAG, "#searchMovie JSONException while parsing response from the server " + e.getMessage() );
+		} catch (Exception e) {
+			e.printStackTrace();
+			Log.e(TAG, "#searchMovie Exception while parsing response from the server " + e.getMessage() );
 		}
 		
 		try {
