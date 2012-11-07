@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MovieSearch extends Activity {
@@ -22,6 +23,11 @@ public class MovieSearch extends Activity {
 	
 	private Button mSearchButton;
 	private EditText mSearchEditText;
+	
+	private TextView mTitle;
+	private TextView mYear;
+	private TextView mRuntime;
+	private TextView mSynopsis;
 	
 	private static final int ERROR = 0;
 	private static final int SUCCESS = 1;
@@ -32,6 +38,12 @@ public class MovieSearch extends Activity {
         setContentView(R.layout.movie_search);
         
         mSearchEditText = (EditText) findViewById(R.id.search_box);
+        
+        mTitle = (TextView) findViewById(R.id.movie_title);
+        mYear = (TextView) findViewById(R.id.movie_year);
+        mRuntime = (TextView) findViewById(R.id.movie_runtime);
+        mSynopsis = (TextView) findViewById(R.id.movie_synopsis);
+        
         initSearchButton();
     }
 
@@ -56,8 +68,11 @@ public class MovieSearch extends Activity {
 			switch (msg.what) {
 				case SUCCESS:
 					String title = (String) b.get("title");
+					String year = (String) b.get("year");
+					String runtime = (String) b.get("runtime");
+					String synopsis = (String) b.get("synopsis");
 					Log.i(TAG, "#handleMessage title: " + title);
-					Toast.makeText(MovieSearch.this, title, Toast.LENGTH_SHORT).show();
+					showMovieInfo(title, year, runtime, synopsis);
 					break;
 					
 				case ERROR:
@@ -72,6 +87,13 @@ public class MovieSearch extends Activity {
 			return false;
 		}
 	});
+	
+	private void showMovieInfo(String title, String year, String runtime, String synopsis) {
+		mTitle.setText(title);
+		mYear.setText(year);
+		mRuntime.setText(runtime);
+		mSynopsis.setText(synopsis);
+	}
 	
 	private void searchMovie(final String movieName) {
 		
@@ -94,15 +116,22 @@ public class MovieSearch extends Activity {
 					b.putString("error", outPut.get("error") );
 				} else{ // successful
 					
-					String title = outPut.get("title");
-					if( outPut.containsKey("title") ) Log.i(TAG, "#searchMovie title: " +  title);
-					if( outPut.containsKey("year") ) Log.i(TAG, "#searchMovie year: " + outPut.get("year") );
-					if( outPut.containsKey("runtime") ) Log.i(TAG, "#searchMovie runtime: " + outPut.get("runtime") );
-					if( outPut.containsKey("synopsis") ) Log.i(TAG, "#searchMovie synopsis: " + outPut.get("synopsis") );
+					String title = null;
+					String year = null;
+					String runtime = null;
+					String synopsis = null;
+					
+					if( outPut.containsKey("title") ) { title = outPut.get("title"); };
+					if( outPut.containsKey("year") ) { year = outPut.get("year"); };
+					if( outPut.containsKey("runtime") ) { runtime = outPut.get("runtime"); };
+					if( outPut.containsKey("synopsis") ) { synopsis = outPut.get("synopsis"); };
 					
 					msg.what = SUCCESS;
 					
 					b.putString("title", title );
+					b.putString("year", year );
+					b.putString("runtime", runtime );
+					b.putString("synopsis", synopsis );
 					
 				}
 				

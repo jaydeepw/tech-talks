@@ -88,6 +88,7 @@ public class ServerConnectionManager {
 			// Skip others.
 			if(movieArr != null && movieArr.length() > 0){
 				JSONObject movieInfo = (JSONObject) movieArr.get(0);
+				// Using JSON keys this way is real bad.
 				String title = movieInfo.has("title") ? movieInfo.getString("title") : null;
 				String year = movieInfo.has("year") ? movieInfo.getString("year") : null;
 				String runtime = movieInfo.has("runtime") ? movieInfo.getString("runtime") : null;
