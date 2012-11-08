@@ -94,10 +94,14 @@ public class ServerConnectionManager {
 				String runtime = movieInfo.has("runtime") ? movieInfo.getString("runtime") : null;
 				String synopsis = movieInfo.has("synopsis") ? movieInfo.getString("synopsis") : null;
 
+				JSONObject posters = movieInfo.has("posters") ? movieInfo.getJSONObject("posters") : null;
+				String imageUrl = posters.has("thumbnail") ? posters.getString("thumbnail") : null;
+				
 				if( title != null ) outPut.put("title", title);
 				if( year != null ) outPut.put("year", year);
 				if( runtime != null ) outPut.put("runtime", runtime);
 				if( synopsis != null ) outPut.put("synopsis", synopsis);
+				if( imageUrl != null ) outPut.put("image_url", imageUrl);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();

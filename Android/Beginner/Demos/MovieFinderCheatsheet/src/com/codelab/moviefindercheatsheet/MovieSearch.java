@@ -71,7 +71,8 @@ public class MovieSearch extends Activity {
 					String year = (String) b.get("year");
 					String runtime = (String) b.get("runtime");
 					String synopsis = (String) b.get("synopsis");
-					Log.i(TAG, "#handleMessage title: " + title);
+					String imageUrl = (String) b.get("image_url");
+					Log.i(TAG, "#handleMessage imageUrl: " + imageUrl);
 					showMovieInfo(title, year, runtime, synopsis);
 					break;
 					
@@ -91,7 +92,7 @@ public class MovieSearch extends Activity {
 	private void showMovieInfo(String title, String year, String runtime, String synopsis) {
 		mTitle.setText(title);
 		mYear.setText(year);
-		mRuntime.setText(runtime);
+		mRuntime.setText(runtime + " min");
 		mSynopsis.setText(synopsis);
 	}
 	
@@ -120,11 +121,13 @@ public class MovieSearch extends Activity {
 					String year = null;
 					String runtime = null;
 					String synopsis = null;
+					String imageUrl = null;
 					
 					if( outPut.containsKey("title") ) { title = outPut.get("title"); };
 					if( outPut.containsKey("year") ) { year = outPut.get("year"); };
 					if( outPut.containsKey("runtime") ) { runtime = outPut.get("runtime"); };
 					if( outPut.containsKey("synopsis") ) { synopsis = outPut.get("synopsis"); };
+					if( outPut.containsKey("image_url") ) { imageUrl = outPut.get("image_url"); };
 					
 					msg.what = SUCCESS;
 					
@@ -132,6 +135,7 @@ public class MovieSearch extends Activity {
 					b.putString("year", year );
 					b.putString("runtime", runtime );
 					b.putString("synopsis", synopsis );
+					b.putString("image_url", imageUrl );
 					
 				}
 				
