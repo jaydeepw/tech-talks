@@ -5,9 +5,12 @@ import java.util.HashMap;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,47 +25,48 @@ public class ServerConnectionManager {
 	
 	private static final String TAG = "ServerConnectionManager";
 	
-	public boolean hitApi(){
-		try {
-		    HttpClient client = new DefaultHttpClient();  
-		    //String getURL = "http://www.google.com";
-		    String getURL = "http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=" + Constants.MOVIE_FINDER_API_KEY + "&q=Toy+Story+3&page_limit=1";
-		    HttpGet get = new HttpGet( getURL );
-		    HttpResponse responseGet = client.execute(get);  
-		    HttpEntity resEntityGet = responseGet.getEntity();  
-		    if (resEntityGet != null) {  
-		        // do something with the response
-		        String response = EntityUtils.toString(resEntityGet);
-		        Log.v(TAG, response);
-		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    Log.e(TAG, "#hitApi Exception msg: " + e.getMessage() );
-		    return false;
-		}
-		
-		return true;
-	}
+	
+	private static final String API_URL = "http://api.rottentomatoes.com/api/public/v1.0";
+	
 	
 	public boolean searchMovie(String movieName, HashMap<String, String> outPut){
 		
+		HttpClient client = new DefaultHttpClient();
 		String response = null;
-		
+		int httpStatus = -1;
+	    
+	    
 		try {
-		    HttpClient client = new DefaultHttpClient();
-		    String getURL = "http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=" + Constants.MOVIE_FINDER_API_KEY + "&q=" + URLEncoder.encode(movieName) + "&page_limit=1";
+		    String getURL = API_URL + "/movies.json?apikey=" + Constants.MOVIE_FINDER_API_KEY + "&q=" + URLEncoder.encode(movieName) + "&page_limit=1";
 		    HttpGet get = new HttpGet( getURL );
 		    HttpResponse responseGet = client.execute(get);  
-		    HttpEntity resEntityGet = responseGet.getEntity();  
-		    if (resEntityGet != null) {  
-		        // do something with the response
-		         response = EntityUtils.toString(resEntityGet);
-		        Log.v(TAG, response);
+		    HttpEntity resEntityGet = responseGet.getEntity();
+		    httpStatus = responseGet.getStatusLine().getStatusCode();
+		    
+		    if( httpStatus == HttpStatus.SC_OK ){
+		    	if (resEntityGet != null) {  
+			        // do something with the response
+			         response = EntityUtils.toString(resEntityGet);
+			        Log.v(TAG, response);
+			    }	
+		    }else{
+		    	if( httpStatus == HttpStatus.SC_UNAUTHORIZED ){
+		    		Log.e(TAG, "#searchMovie Amm... Unauthorized to access this API.");
+		    		return false;	
+		    	}
+		    	if( httpStatus == HttpStatus.SC_INTERNAL_SERVER_ERROR ){
+		    		Log.e(TAG, "#searchMovie Internal server error.");
+		    		return false;
+		    	}
 		    }
+		    
 		} catch (Exception e) {
 		    e.printStackTrace();
 		    Log.e(TAG, "#searchMovie Exception msg: " + e.getMessage() );
 		    return false;
+		} finally{
+			// important thing, easy to forget.
+			client.getConnectionManager().shutdown();
 		}
 		
 		// parse the response
@@ -106,8 +110,53 @@ public class ServerConnectionManager {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
+
 		return true;
+	}
+	
+	public byte[] fetchImage(String imageUrl){
+		
+		HttpClient client = new DefaultHttpClient();
+		String response = null;
+		int httpStatus = -1;
+	    
+	    
+		try {
+		    String getURL = imageUrl;
+		    HttpGet get = new HttpGet( getURL );
+		    HttpResponse responseGet = client.execute(get);  
+		    HttpEntity resEntityGet = responseGet.getEntity();
+		    httpStatus = responseGet.getStatusLine().getStatusCode();
+		    
+		    if( httpStatus == HttpStatus.SC_OK ){
+		    	if (resEntityGet != null) {
+			        // do something with the response
+			         response = EntityUtils.toString(resEntityGet);
+			        Log.v(TAG, response);
+			    }	
+		    }else{
+		    	
+		    	if( httpStatus == HttpStatus.SC_UNAUTHORIZED ){
+		    		Log.e(TAG, "#fetchImage Amm... Unauthorized to access this API.");
+		    		return null;
+		    	}
+
+		    	if( httpStatus == HttpStatus.SC_INTERNAL_SERVER_ERROR ){
+		    		Log.e(TAG, "#fetchImage Internal server error.");
+		    		return null;
+		    	}
+		    }
+		    
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    Log.e(TAG, "#fetchImage Exception msg: " + e.getMessage() );
+		    return null;
+		} finally{
+			// important thing, easy to forget.
+			client.getConnectionManager().shutdown();
+		}
+
+		return response.getBytes();
 	}
 
 }
