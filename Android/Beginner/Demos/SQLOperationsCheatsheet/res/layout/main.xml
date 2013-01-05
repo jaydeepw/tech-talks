@@ -23,6 +23,10 @@
 	    
     </LinearLayout>
     
+    
+    <!-- We should ideally use a listview for the purpose of showing
+    todo items in the UI. But at the beginner level of students ListView
+    adds some difficutly of understanding. -->
     <LinearLayout
         android:id="@+id/todo_list"
 	    android:layout_width="fill_parent"

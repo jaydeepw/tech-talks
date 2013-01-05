@@ -1,6 +1,7 @@
 package com.example.todolistcheatsheet;
 
 import java.util.HashMap;
+import java.util.Set;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -63,7 +64,8 @@ public class MainActivity extends Activity {
 				if( tag != null ) {
 					Log.i(TAG, "#onClick view has been clicked. view tag: " + tag.toString() );
 					Integer id = (Integer) tag;
-			 		// deleteItem(id);
+			 		deleteItem(id);
+			 		retrieveTodoItems();
 				}
 					
 			}
@@ -71,7 +73,43 @@ public class MainActivity extends Activity {
 	}
 
 	private void deleteItem(Integer id) {
+		TodoSQLiteHelper helper = null;
+		SQLiteDatabase db = null;
 		
+		try {
+			helper = new TodoSQLiteHelper(this);
+			
+			// BEST PRACTICE: Always prefer opening a DB in READABLE mode unless
+			// its really required
+			db = helper.getWritableDatabase();
+			
+			String whereClause = Constants.COL_ID + " ='" + id + "'";
+			int rowsAffected = db.delete(Constants.TABLE_TODO_LIST, whereClause, null);
+			
+			// error handling
+			if( rowsAffected == 0 ) {
+				Log.e(TAG, "#deleteItem No rows have been deleted");
+				showToastMsg("Error deleting the item");
+			} else {
+				showToastMsg("Item deleted successfully");
+				Log.d(TAG, "#deleteItem Item deleted successfully");
+			}	
+		} catch (Exception e) {
+			// BEST PRACTICE: its always a good practice to print the reason when an exception rises.
+			Log.i(TAG, "#addItem Exception while inserting into db. Reason: " + e.getMessage() );
+		} finally {
+			// BEST PRACTICE: Always close the cursor and DB in the 'finally' clause
+			// not doing so may let you into debugging the entire app sometime later
+			// when the project is about 2-3 year old.
+			if( db != null && db.isOpen() )
+				db.close();
+			
+			if( helper != null )
+				helper.close();
+			
+			// NOTE: The sequence of closing DB and DBHelper and cursor matters a lot.
+			// Read more about this here  http://stackoverflow.com/questions/4195089/what-does-invalid-statement-in-fillwindow-in-android-cursor-mean/8325904#8325904
+		}
 	}
 
 	private void intiHandler() {
@@ -101,23 +139,31 @@ public class MainActivity extends Activity {
 
 	private void showTodoItems() {
 		
-		if( mTodoMap.size() == 0 ) {
+		LinearLayout todoList = (LinearLayout) findViewById(R.id.todo_list);
+		
+		if( mTodoMap == null || mTodoMap.size() == 0 ) {
 			Log.w(TAG, "#showTodoItems no todo items to show");
+			todoList.removeAllViews();
 			return;
 		}
 		
 		String todoItem = null;
-		LinearLayout todoList = (LinearLayout) findViewById(R.id.todo_list);
-		todoList.removeAllViews();
+		todoList.removeAllViews();	// this is important. Try uncommenting it and add some items in the list.
 		
-		for( Integer i = 1; i <= mTodoMap.size(); i++ ) {
+		Set<Integer> keys = mTodoMap.keySet();
+		
+		for( Integer key : keys ) {
 			TextView tv = new TextView(this);
-			todoItem = mTodoMap.get(i);
+			todoItem = mTodoMap.get(key);
+			
+			if( TextUtils.isEmpty(todoItem) )
+				continue;
+			
 			tv.setText( todoItem );
-			// tv.setText( "" + i + " " + todoItem );	// uncomment to show items with numbers
+			// tv.setText( "" + key + " " + todoItem );	// uncomment to show items with numbers
 			
 			// this will help us in detecting which item has to be deleted.
-			tv.setTag(i);
+			tv.setTag(key);
 			
 			// make it a bit beautiful. Right now, I am really BAD at this.
 			tv.setPadding(10, 5, 10, 5);
@@ -128,6 +174,10 @@ public class MainActivity extends Activity {
 		
 	}
 
+	/***
+	 * Retireves the data from the table in the DB and requests the UI
+	 * to update itself.
+	 * **/
 	private void retrieveTodoItems() {
 		TodoSQLiteHelper helper = null;
 		SQLiteDatabase db = null;
@@ -144,6 +194,8 @@ public class MainActivity extends Activity {
 			cur = db.query( Constants.TABLE_TODO_LIST, columns, null, null, null, null, null );
 			
 			Log.d(TAG, "#retrieveTodoItems cur.size: " + cur.getCount() );
+			
+			mTodoMap = new HashMap<Integer, String>();
 			
 			int id = 0;
 			String item = null;
@@ -195,6 +247,8 @@ public class MainActivity extends Activity {
 				
 				addItem(todoItem);
 				retrieveTodoItems();
+				
+				mTodoItemET.setText("");
 			}
 		});
 	}
