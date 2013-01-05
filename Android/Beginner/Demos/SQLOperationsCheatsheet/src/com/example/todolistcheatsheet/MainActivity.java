@@ -33,6 +33,8 @@ public class MainActivity extends Activity {
 	private EditText mTodoItemET;
 	private Handler mHandler;
 	
+	private View.OnClickListener mOnItemClickListerner;
+	
 	private HashMap<Integer, String> mTodoMap = new HashMap<Integer, String>();
 
     @Override
@@ -45,9 +47,32 @@ public class MainActivity extends Activity {
         
         initOnAddItemClicked();
         intiHandler();
+        initItemClickListener();
         
         retrieveTodoItems();
     }
+
+	private void initItemClickListener() {
+		mOnItemClickListerner = new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+				Object tag = v.getTag();
+				
+				if( tag != null ) {
+					Log.i(TAG, "#onClick view has been clicked. view tag: " + tag.toString() );
+					Integer id = (Integer) tag;
+			 		// deleteItem(id);
+				}
+					
+			}
+		};
+	}
+
+	private void deleteItem(Integer id) {
+		
+	}
 
 	private void intiHandler() {
 		mHandler = new Handler( new Handler.Callback() {
@@ -62,6 +87,7 @@ public class MainActivity extends Activity {
 						
 					case DB_READ_ERROR:
 						Log.i(TAG, "#handleMessage Error while reading the todo items");
+						// TODO: probably we shoud show some message in UI at this time.
 						break;
 	
 					default:
@@ -82,15 +108,21 @@ public class MainActivity extends Activity {
 		
 		String todoItem = null;
 		LinearLayout todoList = (LinearLayout) findViewById(R.id.todo_list);
-		
-		TextView tv = new TextView(this);
+		todoList.removeAllViews();
 		
 		for( Integer i = 1; i <= mTodoMap.size(); i++ ) {
+			TextView tv = new TextView(this);
 			todoItem = mTodoMap.get(i);
 			tv.setText( todoItem );
+			// tv.setText( "" + i + " " + todoItem );	// uncomment to show items with numbers
 			
 			// this will help us in detecting which item has to be deleted.
 			tv.setTag(i);
+			
+			// make it a bit beautiful. Right now, I am really BAD at this.
+			tv.setPadding(10, 5, 10, 5);
+			
+			tv.setOnClickListener(mOnItemClickListerner);
 			todoList.addView(tv);
 		}	// end for
 		
@@ -162,6 +194,7 @@ public class MainActivity extends Activity {
 				}
 				
 				addItem(todoItem);
+				retrieveTodoItems();
 			}
 		});
 	}
