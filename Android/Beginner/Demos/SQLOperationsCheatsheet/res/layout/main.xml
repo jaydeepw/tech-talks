@@ -3,8 +3,10 @@
     android:layout_height="fill_parent" >
 
     <LinearLayout
-        android:id="@id/todo_list"
+        android:id="@+id/todo_list"
 	    android:layout_width="match_parent"
-	    android:layout_height="match_parent" />
+	    android:layout_height="match_parent">
+	    
+    </LinearLayout>
 
 </LinearLayout>
