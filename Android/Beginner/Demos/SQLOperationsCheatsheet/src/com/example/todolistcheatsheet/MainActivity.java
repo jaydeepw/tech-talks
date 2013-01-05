@@ -3,6 +3,8 @@ package com.example.todolistcheatsheet;
 import java.util.HashMap;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -12,14 +14,24 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	
 	private static final String TAG = MainActivity.class.getName();
+
+	protected static final int DB_READ_ERROR = 0;
+	protected static final int DB_READ_SUCCESS = 1;
 	
+	// usually its a convention in industry that all the member
+	// variables are name with initial 'm' in their names.
+	// Sometimes you will also find them starting with an
+	// underscore.
 	private Button mAddItem;
 	private EditText mTodoItemET;
+	private Handler mHandler;
 	
 	private HashMap<Integer, String> mTodoMap = new HashMap<Integer, String>();
 
@@ -32,9 +44,55 @@ public class MainActivity extends Activity {
         mTodoItemET = (EditText) findViewById(R.id.todo_item);
         
         initOnAddItemClicked();
+        intiHandler();
         
         retrieveTodoItems();
+        showTodoItems();
     }
+
+	private void intiHandler() {
+		mHandler = new Handler( new Handler.Callback() {
+			
+			@Override
+			public boolean handleMessage(Message msg) {
+				
+				switch ( msg.what ) {
+					case DB_READ_SUCCESS:
+						showTodoItems();
+						break;
+						
+					case DB_READ_ERROR:
+						
+						break;
+	
+					default:
+						break;
+				}
+				
+				return true;
+			}
+		});
+	}
+
+	private void showTodoItems() {
+		
+		if( mTodoMap.size() == 0 ) {
+			Log.w(TAG, "#showTodoItems no todo items to show");
+			return;
+		}
+		
+		String todoItem = null;
+		LinearLayout todoList = (LinearLayout) findViewById(R.id.todo_list);
+		
+		TextView tv = new TextView(this);
+		
+		for( int i = 0; i < mTodoMap.size(); i++ ) {
+			todoItem = mTodoMap.get(i+1);
+			tv.setText( todoItem );
+			todoList.addView(tv);
+		}
+		
+	}
 
 	private void retrieveTodoItems() {
 		TodoSQLiteHelper helper = null;
