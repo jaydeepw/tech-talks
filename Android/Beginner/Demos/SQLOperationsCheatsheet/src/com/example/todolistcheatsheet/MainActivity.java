@@ -1,4 +1,4 @@
-package com.example.sqloperationscheatsheet;
+package com.example.todolistcheatsheet;
 
 import java.util.HashMap;
 
@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -130,6 +129,7 @@ public class MainActivity extends Activity {
 				showToastMsg("Error inserting the item");
 			} else {
 				showToastMsg("Item inserted successfully");
+				Log.d(TAG, "#addItem Item inserted successfully");
 			}	
 		} catch (Exception e) {
 			// BEST PRACTICE: its always a good practice to print the reason when an exception rises.

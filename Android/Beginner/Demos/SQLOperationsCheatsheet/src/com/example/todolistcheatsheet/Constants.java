@@ -1,4 +1,4 @@
-package com.example.sqloperationscheatsheet;
+package com.example.todolistcheatsheet;
 
 public class Constants {
 	

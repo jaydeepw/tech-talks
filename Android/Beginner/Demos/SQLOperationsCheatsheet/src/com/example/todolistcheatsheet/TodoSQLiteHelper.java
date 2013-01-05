@@ -1,4 +1,4 @@
-package com.example.sqloperationscheatsheet;
+package com.example.todolistcheatsheet;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
