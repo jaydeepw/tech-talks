@@ -47,7 +47,6 @@ public class MainActivity extends Activity {
         intiHandler();
         
         retrieveTodoItems();
-        showTodoItems();
     }
 
 	private void intiHandler() {
@@ -62,7 +61,7 @@ public class MainActivity extends Activity {
 						break;
 						
 					case DB_READ_ERROR:
-						
+						Log.i(TAG, "#handleMessage Error while reading the todo items");
 						break;
 	
 					default:
@@ -86,11 +85,14 @@ public class MainActivity extends Activity {
 		
 		TextView tv = new TextView(this);
 		
-		for( int i = 0; i < mTodoMap.size(); i++ ) {
-			todoItem = mTodoMap.get(i+1);
+		for( Integer i = 1; i <= mTodoMap.size(); i++ ) {
+			todoItem = mTodoMap.get(i);
 			tv.setText( todoItem );
+			
+			// this will help us in detecting which item has to be deleted.
+			tv.setTag(i);
 			todoList.addView(tv);
-		}
+		}	// end for
 		
 	}
 
@@ -98,7 +100,7 @@ public class MainActivity extends Activity {
 		TodoSQLiteHelper helper = null;
 		SQLiteDatabase db = null;
 		Cursor cur = null;
-		
+		Message msg = new Message();
 		try {
 			helper = new TodoSQLiteHelper(this);
 			
@@ -120,10 +122,12 @@ public class MainActivity extends Activity {
 			}
 			
 			Log.d( TAG, "#retrieveTodoItems mTodoMap.size: " + mTodoMap.size() );
+			msg.what = DB_READ_SUCCESS;
 			
 		} catch (Exception e) {
 			// BEST PRACTICE: its always a good practice to print the reason when an exception rises.
 			Log.i(TAG, "#retrieveTodoItems Exception while inserting into db. Reason: " + e.getMessage() );
+			msg.what = DB_READ_ERROR;
 		} finally {
 			// BEST PRACTICE: Always close the cursor and DB in the 'finally' clause
 			// not doing so may let you into debugging the entire app sometime later
@@ -140,6 +144,9 @@ public class MainActivity extends Activity {
 			// NOTE: The sequence of closing DB and DBHelper and cursor matters a lot.
 			// Read more about this here  http://stackoverflow.com/questions/4195089/what-does-invalid-statement-in-fillwindow-in-android-cursor-mean/8325904#8325904
 		}
+		
+		// update the UI thread
+		mHandler.sendMessage(msg);
 	}
 
 	private void initOnAddItemClicked() {
